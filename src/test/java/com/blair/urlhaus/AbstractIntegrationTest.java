@@ -1,4 +1,4 @@
-package com.spamip.spamipvisualizer;
+package com.blair.urlhaus;
 
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;

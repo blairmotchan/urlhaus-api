@@ -1,13 +1,13 @@
-package com.spamip.spamipvisualizer;
+package com.blair.urlhaus;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class SpamipApplication {
+public class UrlHausApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(SpamipApplication.class, args);
+        SpringApplication.run(UrlHausApplication.class, args);
     }
 
 }
