@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 
 class UrlHausApplicationTests extends AbstractIntegrationTest {
 
+
     @Test
     void contextLoads() {
     }
