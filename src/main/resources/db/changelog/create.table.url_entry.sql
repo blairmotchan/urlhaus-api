@@ -1,11 +1,13 @@
 --liquibase formatted sql
 --changeset blairmotchan:create-url_entry logicalFilePath:create.table.url_entry.sql
 
+DROP SCHEMA IF EXISTS  url_haus;
+
 CREATE SCHEMA IF NOT EXISTS url_haus;
 
 CREATE TABLE url_haus.url_entry
 (
-    id            SERIAL,
+    id            INTEGER,
     date_added    TIMESTAMP NOT NULL,
     url           VARCHAR   NOT NULL,
     url_status    VARCHAR   NOT NULL,

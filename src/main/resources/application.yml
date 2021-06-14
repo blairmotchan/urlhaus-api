@@ -1,3 +1,6 @@
 spring:
   liquibase:
     change-log: classpath:/db/changelog/liquibase-changelog.xml
+
+batch-size: 500
+input-file-name: csv.txt

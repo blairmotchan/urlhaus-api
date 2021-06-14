@@ -1,14 +1,14 @@
 version: '3.7'
 services:
-  urlhaus:
-    image: urlhaus-searcher:0.0.1-SNAPSHOT
-    restart: always
-    environment:
-      - spring_profiles_active=live
-    depends_on:
-      - postgres
-    ports:
-      - '8080:8080'
+#  urlhaus:
+#    image: urlhaus-searcher:0.0.1-SNAPSHOT
+#    restart: always
+#    environment:
+#      - spring_profiles_active=live
+#    depends_on:
+#      - postgres
+#    ports:
+#      - '8080:8080'
 
   postgres:
     image: postgres:10.5
@@ -20,6 +20,8 @@ services:
       options:
         max-size: 10m
         max-file: "3"
+    volumes:
+      - ./db-init-scripts:/docker-entrypoint-initdb.d
     ports:
       - '5432:5432'
 

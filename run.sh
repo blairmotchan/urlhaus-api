@@ -1,3 +1,7 @@
 #! /bin/bash
 
-mvn spring-boot:build-image -DskipTests && docker-compose up
+mvn clean install -DskipTests
+cd api
+mvn spring-boot:build-image -DskipTests
+cd ../
+docker-compose up
