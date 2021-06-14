@@ -4,7 +4,9 @@ import com.blair.urlhaus.Row;
 import com.blair.urlhaus.domain.MalwareUrl;
 import com.blair.urlhaus.repository.MalwareUrlRepository;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Profile;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
 import org.supercsv.cellprocessor.Optional;
@@ -34,15 +36,15 @@ public class DataLoaderService {
 
     public DataLoaderService(
             MalwareUrlRepository malwareUrlRepository,
-            @Value("${batch.size}") int batchSize,
-            @Value("${csv.file.name}") String csvFileName
+            @Value("${batch-size}") int batchSize,
+            @Value("${input-file-name}") String csvFileName
     ) {
         this.malwareUrlRepository = malwareUrlRepository;
         this.batchSize = batchSize;
         this.csvFileName = csvFileName;
     }
 
-    @PostConstruct
+    @EventListener(ApplicationReadyEvent.class)
     public void loadData() throws IOException {
         if (malwareUrlRepository.getTotalCount() < 1) {
             populateDatabase();

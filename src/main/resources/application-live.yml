@@ -4,3 +4,7 @@ spring:
     hikari:
       username: postgres
       password: postgres
+
+logging:
+  level:
+    org.springframework: debug
