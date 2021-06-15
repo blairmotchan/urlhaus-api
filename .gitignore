@@ -34,4 +34,5 @@ build/
 out/
 
 src/main/resources/csv.txt
+src/main/resources/csv_ip.txt
 src/main/resources/GeoLite2-City.mmdb

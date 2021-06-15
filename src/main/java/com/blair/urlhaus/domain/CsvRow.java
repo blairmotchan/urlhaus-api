@@ -2,6 +2,8 @@ package com.blair.urlhaus.domain;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.supercsv.cellprocessor.Optional;
+import org.supercsv.cellprocessor.ift.CellProcessor;
 
 public class CsvRow {
     private static final ObjectMapper objectMapper = new ObjectMapper();
@@ -111,4 +113,27 @@ public class CsvRow {
                 "'" + reporter + "'" +
                 ")";
     }
+
+    public static final CellProcessor[] CELL_PROCESSORS =
+            new CellProcessor[]{
+                    new Optional(),
+                    new Optional(),
+                    new Optional(),
+                    new Optional(),
+                    new Optional(),
+                    new Optional(),
+                    new Optional(),
+                    new Optional()
+            };
+
+    public static final String[] HEADERS = {
+            "id",
+            "dateAdded",
+            "url",
+            "status",
+            "threat",
+            "tags",
+            "urlHausLink",
+            "reporter"
+    };
 }

@@ -1,18 +1,14 @@
 package com.blair.urlhaus.service;
 
-import com.blair.urlhaus.domain.CsvRow;
-import com.blair.urlhaus.domain.Geography;
+import com.blair.urlhaus.domain.CsvGeographyRow;
 import com.blair.urlhaus.domain.MalwareUrl;
 import com.blair.urlhaus.repository.MalwareUrlRepository;
-import com.maxmind.geoip2.exception.GeoIp2Exception;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
-import org.supercsv.cellprocessor.Optional;
-import org.supercsv.cellprocessor.ift.CellProcessor;
 import org.supercsv.io.CsvBeanReader;
 import org.supercsv.io.ICsvBeanReader;
 import org.supercsv.prefs.CsvPreference;
@@ -21,45 +17,48 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static java.util.Arrays.asList;
 
 @Service
 @Profile("live")
 public class DataLoaderService {
-    private static final Pattern PATTERN = Pattern.compile("(.*?)(\\b(?:[0-9]{1,3}\\.){3}[0-9]{1,3}\\b)(.*?)");
-
     private MalwareUrlRepository malwareUrlRepository;
-    private IpGeographyService ipGeographyService;
+    private RewriteDataService rewriteDataService;
     private int batchSize;
     private String csvFileName;
+    private boolean rewriteUrlData;
 
     public DataLoaderService(
             MalwareUrlRepository malwareUrlRepository,
-            IpGeographyService ipGeographyService,
+            RewriteDataService rewriteDataService,
             @Value("${batch-size}") int batchSize,
-            @Value("${input-file-name}") String csvFileName
+            @Value("${url-data-with-geography}") String csvFileName,
+            @Value("rewrite-url-data") String rewriteUrlData
     ) {
         this.malwareUrlRepository = malwareUrlRepository;
-        this.ipGeographyService = ipGeographyService;
         this.batchSize = batchSize;
         this.csvFileName = csvFileName;
+        this.rewriteDataService = rewriteDataService;
+        this.rewriteUrlData = Boolean.valueOf(rewriteUrlData);
     }
 
     @EventListener(ApplicationReadyEvent.class)
-    public void loadData() throws IOException, GeoIp2Exception {
+    public void loadData() throws Exception {
+        if (rewriteUrlData) {
+            rewriteDataService.run();
+        }
         if (malwareUrlRepository.getTotalCount() < 1) {
             populateDatabase();
         }
     }
 
-    private void populateDatabase() throws IOException, GeoIp2Exception {
+    private void populateDatabase() throws IOException {
         ICsvBeanReader beanReader = null;
         try {
             beanReader = getBeanReader();
@@ -71,10 +70,10 @@ public class DataLoaderService {
         }
     }
 
-    private void iterateOverData(ICsvBeanReader beanReader) throws IOException, GeoIp2Exception {
-        CsvRow csvRow;
+    private void iterateOverData(ICsvBeanReader beanReader) throws IOException {
+        CsvGeographyRow csvRow;
         List<MalwareUrl> entries = new ArrayList<>();
-        while ((csvRow = beanReader.read(CsvRow.class, HEADERS, CELL_PROCESSORS)) != null) {
+        while ((csvRow = beanReader.read(CsvGeographyRow.class, CsvGeographyRow.HEADERS, CsvGeographyRow.CELL_PROCESSORS)) != null) {
             if (csvRow.getStatus().equals("online")) {
                 entries = handleEntries(csvRow, entries);
             }
@@ -84,7 +83,7 @@ public class DataLoaderService {
         }
     }
 
-    private List<MalwareUrl> handleEntries(CsvRow csvRow, List<MalwareUrl> entries) throws IOException, GeoIp2Exception {
+    private List<MalwareUrl> handleEntries(CsvGeographyRow csvRow, List<MalwareUrl> entries) {
         if (entries.size() == batchSize) {
             malwareUrlRepository.insert(entries);
             entries = new ArrayList<>();
@@ -95,22 +94,20 @@ public class DataLoaderService {
         return entries;
     }
 
-    private MalwareUrl buildMalwareUrl(CsvRow csvRow) throws IOException, GeoIp2Exception {
-        Matcher m = PATTERN.matcher(csvRow.getUrl());
-        Geography geography = m.matches() ? ipGeographyService.getGeography(m.group(2)) : IpGeographyService.getEmptyGeography();
+    private MalwareUrl buildMalwareUrl(CsvGeographyRow row) {
         return new MalwareUrl(
-                Integer.parseInt(csvRow.getId()),
-                LocalDateTime.parse(csvRow.getDateAdded(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
-                csvRow.getUrl(),
-                csvRow.getStatus(),
-                csvRow.getThreat(),
-                asList(csvRow.getTags().split(",")),
-                csvRow.getUrlHausLink(),
-                csvRow.getReporter(),
-                geography.getCountry(),
-                geography.getCity(),
-                geography.getLatitude(),
-                geography.getLongitude()
+                Integer.parseInt(row.getId()),
+                LocalDateTime.parse(row.getDateAdded(), DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")),
+                row.getUrl(),
+                row.getStatus(),
+                row.getThreat(),
+                asList(row.getTags().split(",")),
+                row.getUrlHausLink(),
+                row.getReporter(),
+                row.getCountry(),
+                row.getCity(),
+                row.getLatitude() != null ? new BigDecimal(row.getLatitude()) : null,
+                row.getLongitude() != null ? new BigDecimal(row.getLongitude()) : null
         );
     }
 
@@ -118,28 +115,4 @@ public class DataLoaderService {
         File input = ResourceUtils.getFile("classpath:" + csvFileName);
         return new CsvBeanReader(new FileReader(input), CsvPreference.STANDARD_PREFERENCE);
     }
-
-
-    private static final CellProcessor[] CELL_PROCESSORS =
-            new CellProcessor[]{
-                    new Optional(),
-                    new Optional(),
-                    new Optional(),
-                    new Optional(),
-                    new Optional(),
-                    new Optional(),
-                    new Optional(),
-                    new Optional()
-            };
-
-    private static final String[] HEADERS = {
-            "id",
-            "dateAdded",
-            "url",
-            "status",
-            "threat",
-            "tags",
-            "urlHausLink",
-            "reporter"
-    };
 }
