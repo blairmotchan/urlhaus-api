@@ -4,3 +4,4 @@ spring:
 
 batch-size: 500
 input-file-name: csv.txt
+geo-lite-city-database: GeoLite2-City.mmdb

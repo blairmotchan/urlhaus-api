@@ -14,7 +14,10 @@ CREATE TABLE url_haus.url_entry
     threat        VARCHAR   NOT NULL,
     tags          JSONB     NOT NULL,
     url_haus_link VARCHAR   NOT NULL,
-    reporter      VARCHAR   NOT NULL
+    reporter      VARCHAR   NOT NULL,
+    city          VARCHAR,
+    country       VARCHAR,
+    geog          GEOGRAPHY(Point)
 );
 
 CREATE INDEX url_entry_date_added ON url_haus.url_entry (date_added);
@@ -22,4 +25,9 @@ CREATE INDEX url_entry_url ON url_haus.url_entry (url);
 CREATE INDEX url_entry_url_status ON url_haus.url_entry (url_status);
 CREATE INDEX url_entry_threat ON url_haus.url_entry (threat);
 CREATE INDEX url_entry_tags ON url_haus.url_entry (tags);
+CREATE INDEX url_entry_country ON url_haus.url_entry (country);
+CREATE INDEX url_entry_city ON url_haus.url_entry (city);
+CREATE INDEX url_entry_geog ON url_haus.url_entry (geog);
+
+
 

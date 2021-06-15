@@ -11,7 +11,7 @@ services:
       - '8080:8080'
 
   postgres:
-    image: postgres:10.5
+    image: postgis/postgis:13-master
     restart: always
     environment:
       - POSTGRES_USER=postgres

@@ -10,6 +10,7 @@ import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.utility.DockerImageName;
 
 @SpringBootTest(classes = UrlHausApplication.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -18,7 +19,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @ActiveProfiles("test")
 @Transactional
 public class AbstractIntegrationTest {
-    public static PostgreSQLContainer<?> postgreDBContainer = new PostgreSQLContainer<>("postgres:10.5");
+    public static PostgreSQLContainer<?> postgreDBContainer = new PostgreSQLContainer<>(DockerImageName.parse("postgis/postgis").asCompatibleSubstituteFor("postgres"));
 
     static {
         postgreDBContainer.start();
