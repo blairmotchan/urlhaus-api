@@ -20,6 +20,9 @@ The run bash script performs the following actions:
 * Creates a docker image of the API
 * Runs `docker-compose up` to start a Postgres docker image with Postgis
 
+The Spring boot docker image is set to `restart: always` just in case there is an issue with connecting to postgres. 
+This appears to only happen the first time you create the containers.
+
 You can verify the health of your API at http://localhost:8080/actuator/health
 
 ## How to access API Docs
