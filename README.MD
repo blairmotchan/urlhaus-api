@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/blairmotchan/urlhaus-api.svg?branch=main)](https://travis-ci.com/blairmotchan/urlhaus-api)
+
 # Malware Url Searcher
 
 We all know to stay away from "sketchy" websites because they are full of vulnerabilities, exploits, and viruses. 
