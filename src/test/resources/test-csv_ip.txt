@@ -1,0 +1,4 @@
+1352054,2021-06-11 02:37:06,http://58.248.146.182:44088/Mozi.m,online,malware_download,"elf,Mozi",https://urlhaus.abuse.ch/url/1352054/,lrz_urlhaus,China,Guangzhou,113.2539,23.1181
+1352055,2021-06-11 02:37:06,http://27.6.201.194:59676/Mozi.m,online,malware_download,"elf,Mozi",https://urlhaus.abuse.ch/url/1352055/,lrz_urlhaus,India,New Delhi,77.2204,28.6328
+1352053,2021-06-11 02:37:05,http://27.45.36.43:52840/Mozi.m,online,malware_download,"elf,Mozi",https://urlhaus.abuse.ch/url/1352053/,lrz_urlhaus,China,Xibian,113.6531,22.8519
+1352050,2021-06-11 02:36:16,http://186.33.125.12:34795/Mozi.m,online,malware_download,"elf,Mozi",https://urlhaus.abuse.ch/url/1352050/,lrz_urlhaus,Dominican Republic,Bajos de Haina,-70.0407,18.4193

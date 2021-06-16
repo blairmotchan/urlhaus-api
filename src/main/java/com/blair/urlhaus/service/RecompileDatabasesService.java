@@ -18,12 +18,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Service
-public class RewriteDataService {
+public class RecompileDatabasesService {
     private String inputFileName;
     private String outputFileName;
     private IpGeographyService ipGeographyService;
 
-    public RewriteDataService(
+    public RecompileDatabasesService(
             IpGeographyService ipGeographyService,
             @Value("${url-data-only-file-name}") String inputFileName,
             @Value("${url-data-with-geography}") String outputFileName
@@ -33,7 +33,7 @@ public class RewriteDataService {
         this.outputFileName = outputFileName;
     }
 
-    public void run() throws Exception {
+    public void recompileDatabase() throws IOException, GeoIp2Exception {
         ICsvBeanReader beanReader = null;
         ICsvBeanWriter beanWriter = null;
         try {
@@ -65,8 +65,8 @@ public class RewriteDataService {
                     csvRow.getReporter(),
                     geography.getCountry(),
                     geography.getCity(),
-                    geography.getLatitude().toString(),
-                    geography.getLongitude().toString()
+                    geography.getLongitude() != null ? geography.getLongitude().toString() : null,
+                    geography.getLatitude() != null ? geography.getLatitude().toString() : null
             );
             beanWriter.write(csvGeographyRow, CsvGeographyRow.HEADERS, CsvGeographyRow.CELL_PROCESSORS);
         }

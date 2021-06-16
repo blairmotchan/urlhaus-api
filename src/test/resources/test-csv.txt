@@ -1,0 +1,2 @@
+"1352061","2021-06-11 02:37:16","http://222.220.208.254:54203/Mozi.m","online","malware_download","elf,Mozi","https://urlhaus.abuse.ch/url/1352061/","lrz_urlhaus"
+"1352060","2021-06-11 02:37:15","http://27.41.199.177:57174/Mozi.m","online","malware_download","elf,Mozi","https://urlhaus.abuse.ch/url/1352060/","lrz_urlhaus"

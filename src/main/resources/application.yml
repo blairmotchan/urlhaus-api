@@ -6,4 +6,4 @@ batch-size: 500
 url-data-only-file-name: csv.txt
 url-data-with-geography: csv_ip.txt
 geo-lite-city-database: GeoLite2-City.mmdb
-rewrite-url-data: false
+recompile-databases: false

@@ -73,11 +73,7 @@ public class CsvRow {
     }
 
     public String getTags() {
-        try {
-            return objectMapper.writeValueAsString(tags.split(","));
-        } catch (JsonProcessingException jpe) {
-            throw new RuntimeException();
-        }
+        return tags;
     }
 
     public void setTags(String tags) {

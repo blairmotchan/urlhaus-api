@@ -2,7 +2,6 @@ version: '3.7'
 services:
   urlhaus:
     image: urlhaus-searcher:0.0.1-SNAPSHOT
-    restart: always
     environment:
       - spring_profiles_active=live
     depends_on:
@@ -12,7 +11,6 @@ services:
 
   postgres:
     image: postgis/postgis:13-master
-    restart: always
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres

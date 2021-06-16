@@ -17,7 +17,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -29,44 +28,40 @@ import static java.util.Arrays.asList;
 @Profile("live")
 public class DataLoaderService {
     private MalwareUrlRepository malwareUrlRepository;
-    private RewriteDataService rewriteDataService;
+    private RecompileDatabasesService recompileDatabasesService;
     private int batchSize;
     private String csvFileName;
     private boolean rewriteUrlData;
 
     public DataLoaderService(
             MalwareUrlRepository malwareUrlRepository,
-            RewriteDataService rewriteDataService,
+            RecompileDatabasesService recompileDatabasesService,
             @Value("${batch-size}") int batchSize,
             @Value("${url-data-with-geography}") String csvFileName,
-            @Value("rewrite-url-data") String rewriteUrlData
+            @Value("${recompile-databases}") String recompileDatabases
     ) {
         this.malwareUrlRepository = malwareUrlRepository;
         this.batchSize = batchSize;
         this.csvFileName = csvFileName;
-        this.rewriteDataService = rewriteDataService;
-        this.rewriteUrlData = Boolean.valueOf(rewriteUrlData);
+        this.recompileDatabasesService = recompileDatabasesService;
+        this.rewriteUrlData = Boolean.valueOf(recompileDatabases);
     }
 
     @EventListener(ApplicationReadyEvent.class)
     public void loadData() throws Exception {
         if (rewriteUrlData) {
-            rewriteDataService.run();
+            recompileDatabasesService.recompileDatabase();
         }
         if (malwareUrlRepository.getTotalCount() < 1) {
             populateDatabase();
         }
     }
 
-    private void populateDatabase() throws IOException {
-        ICsvBeanReader beanReader = null;
-        try {
-            beanReader = getBeanReader();
+    private void populateDatabase() {
+        try (ICsvBeanReader beanReader = getBeanReader()) {
             iterateOverData(beanReader);
-        } finally {
-            if (beanReader != null) {
-                beanReader.close();
-            }
+        } catch (Exception e) {
+            System.out.println(e);
         }
     }
 
@@ -97,7 +92,7 @@ public class DataLoaderService {
     private MalwareUrl buildMalwareUrl(CsvGeographyRow row) {
         return new MalwareUrl(
                 Integer.parseInt(row.getId()),
-                LocalDateTime.parse(row.getDateAdded(), DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")),
+                LocalDateTime.parse(row.getDateAdded(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
                 row.getUrl(),
                 row.getStatus(),
                 row.getThreat(),
@@ -106,8 +101,8 @@ public class DataLoaderService {
                 row.getReporter(),
                 row.getCountry(),
                 row.getCity(),
-                row.getLatitude() != null ? new BigDecimal(row.getLatitude()) : null,
-                row.getLongitude() != null ? new BigDecimal(row.getLongitude()) : null
+                row.getLatitude() != null ? Double.valueOf(row.getLatitude()) : null,
+                row.getLongitude() != null ? Double.valueOf(row.getLongitude()) : null
         );
     }
 
