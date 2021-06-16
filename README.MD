@@ -42,6 +42,14 @@ If you want to use the latest data then these steps need to be followed:
 5) Change `recompile-databases: false` to `recompile-databases: true` in `application.yml` 
 6) Run the spring application, but not as a docker image/container so that it has access to your file system and can overwrite the necessary files
 
+## Considerations
+The choice that I weighed the most was how to handle seeding the data. Ultimately, the project uses liquibase to create the schema and then
+has a separate service class that loads the data on start. The data does not get loaded as part of liquibase because the file is too large to hash, and 
+I wanted it to be _relatively_ easy to recompile the data.
+
+The data is loaded in the application so that it can be tested and 100% managed by the application. The data could easily be loaded
+in init scripts as part of the postgress container, but then that process would be a black box to the rest of the application.
+
 ## Acknowledgements
 
 This product includes GeoLite2 data created by MaxMind, available from http://www.maxmind.com
@@ -54,4 +62,4 @@ https://urlhaus.abuse.ch/api/
 * Learn more about SRIDs to provide more accurate distances
 * Lookup IP information for URLs that are not IPs
 * Ignore comment lines in the urlhaus data.
-* Make it easier to recompile databases
+* Make it easier to recompile databases, turn this into a multi-module project
